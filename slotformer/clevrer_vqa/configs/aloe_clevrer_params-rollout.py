@@ -21,7 +21,7 @@ class SlotFormerParams(BaseParams):
 
     # data settings
     dataset = 'clevrer_slots'
-    data_root = './data/CLEVRER'
+    data_root = '/drive/yuwu3/CLEVRER'
     slots_root = './data/CLEVRER/rollout_clevrer_slots.pkl'
     # put absolute path here
     cur_dir = os.path.dirname(os.path.realpath(__file__))

@@ -35,7 +35,7 @@ class CLEVRERVQADataset(Dataset):
         super().__init__()
         self.data_root = data_root
         self.split = split
-        assert self.split in ['train', 'val', 'test']
+        # assert self.split in ['train', 'val', 'test']
         self.video_path = os.path.join(data_root, 'videos', split)
         # self.anno_path = os.path.join(data_root, 'annotations', split)
 
@@ -204,7 +204,7 @@ class CLEVRERVQADataset(Dataset):
         """Convert a question str to a 1d np array and do the padding."""
         q = q_str.lower().replace('?', '').split(' ')
         q_tokens = [self.q_vocab[word] for word in q if word]  # eliminate ''
-        pad_mask = np.ones(pad_num).astype(np.bool)
+        pad_mask = np.ones(pad_num).astype(bool)
         pad_mask[:len(q_tokens)] = False
         q_tokens += [
             self.q_vocab['PAD'] for _ in range(pad_num - len(q_tokens))
@@ -501,7 +501,7 @@ def build_clevrer_slots_vqa_dataset(params, test_set=False):
         test_dataset = CLEVRERSlotsVQADataset(**args)
         return test_dataset
 
-    args['split'] = 'val'
+    args['split'] = 'validation'
     args['video_slots'] = video_slots['val']
     val_dataset = CLEVRERSlotsVQADataset(**args)
 

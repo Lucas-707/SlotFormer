@@ -34,7 +34,22 @@ def test(model, test_loader):
         'scene_index': i + 15000,
         'questions': []
     } for i in range(5000)]
+
+    total, correct = 0, 0
+    total_per_q, correct_per_q = 0, 0
+    total_expl, correct_expl = 0, 0
+    total_expl_per_q, correct_expl_per_q = 0, 0
+    total_pred, correct_pred = 0, 0
+    total_pred_per_q, correct_pred_per_q = 0, 0
+    total_coun, correct_coun = 0, 0
+    total_coun_per_q, correct_coun_per_q = 0, 0
+    total_desc, correct_desc = 0, 0
+
+
+
     for data_dict in tqdm(test_loader):
+        print(data_dict)
+        exit()
         scene_index = data_dict['scene_index'].numpy().astype(np.int32)  # [B]
         question_id = data_dict['question_id'].numpy().astype(np.int32)  # [B]
         mc_choice_id = data_dict['mc_choice_id'].numpy().astype(np.int32)
@@ -62,6 +77,7 @@ def test(model, test_loader):
                 'question_id': int(q_id),
                 'answer': int2str(int(ans)),
             })
+
 
         for i in range(num_mc):
             idx = i + num_cls
@@ -102,7 +118,7 @@ if __name__ == '__main__':
     params = importlib.import_module(os.path.basename(args.params))
     params = params.SlotFormerParams()
 
-    test_set, collate_fn = build_dataset(params, test_set=True)
+    _, test_set, collate_fn = build_dataset(params, test_set=False)
     label2answer = test_set.label2answer
     test_loader = DataLoader(
         test_set,
