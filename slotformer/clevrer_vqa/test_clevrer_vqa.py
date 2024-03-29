@@ -48,8 +48,6 @@ def test(model, test_loader):
 
 
     for data_dict in tqdm(test_loader):
-        print(data_dict)
-        exit()
         scene_index = data_dict['scene_index'].numpy().astype(np.int32)  # [B]
         question_id = data_dict['question_id'].numpy().astype(np.int32)  # [B]
         mc_choice_id = data_dict['mc_choice_id'].numpy().astype(np.int32)

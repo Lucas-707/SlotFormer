@@ -5,7 +5,7 @@ class SlotFormerParams(BaseParams):
     project = 'SlotFormer'
 
     # training settings
-    gpus = 4  # 2 GPUs should also be good
+    gpus = 1  # 2 GPUs should also be good
     max_epochs = 80  # ~450k steps
     save_interval = 0.25  # save every 0.25 epoch
     eval_interval = 4  # evaluate every 4 epochs
@@ -21,15 +21,16 @@ class SlotFormerParams(BaseParams):
 
     # data settings
     dataset = 'clevrer_slots'
-    data_root = './data/CLEVRER'
-    slots_root = './data/CLEVRER/clevrer_slots.pkl'
+    data_root = '/drive/yuwu3/CLEVRER'
+    slots_root = './data/CLEVRER/my_slots.pkl'
     n_sample_frames = 6 + 10  # 6 burn-in, 10 rollout
     frame_offset = 2  # subsample the video by a factor of 2
     load_img = True
     filter_enter = True  # only train on valid sequences
     train_batch_size = 128 // gpus
     val_batch_size = train_batch_size * 2
-    num_workers = 8
+    # val_batch_size = 1
+    num_workers = 1
 
     # model configs
     model = 'SlotFormer'

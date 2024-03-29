@@ -115,7 +115,7 @@ def main(params):
     datamodule = BaseDataModule(
         params, train_set=val_set, val_set=val_set, use_ddp=False)
     val_loader = datamodule.val_loader
-
+    print("val_loader batch size: ", val_loader.batch_size)
     model = build_model(params).eval().cuda()
     model.load_state_dict(
         torch.load(args.weight, map_location='cpu')['state_dict'])
@@ -127,6 +127,11 @@ def main(params):
     ]
     metric_avg_dict = {
         m: [AverageMeter() for _ in range(rollout_len)]  # per-step results
+        for m in metrics
+    }
+    n_val_instance = 5000
+    metric_per_instance = {
+        m: [0 for _ in range(n_val_instance)]  # per-instance results
         for m in metrics
     }
     # if `args.save_num` is specified, we will save those videos and return
@@ -158,10 +163,19 @@ def main(params):
             # OBJ3D doesn't have object-level annotations
             eval_traj='clevrer' in params.dataset.lower(),
         )
+        # print("data_dict: ", data_dict.keys())
+        # print("data idx: ", data_dict['data_idx'])
+        # print("data img: ", data_dict['img'].shape)
+        # print("metric_dict: ", metric_dict.keys())
+        # exit()
         for i in range(rollout_len):
             for m in metrics:
                 metric_avg_dict[m][i].update(metric_dict[m][i], B)
 
+        data_idx = data_dict['data_idx'][0]
+        for m in metrics:
+            metric_per_instance[m][data_idx] = sum(metric_dict[m]) / len(metric_dict[m])
+       
         # save videos for visualization
         flag = False
         for i in range(B):
@@ -212,11 +226,20 @@ def main(params):
         k: np.array([m.avg for m in v])
         for k, v in metric_avg_dict.items()
     }
+    metrics2 = {
+        k: np.array([m for m in v])
+        for k, v in metric_per_instance.items()
+    }
+    
     save_dir = os.path.join('vis', params.dataset.split('_')[0], args.params)
     os.makedirs(save_dir, exist_ok=True)
     for k, v in metrics.items():
         np.save(os.path.join(save_dir, f'{k}.npy'), v)
         print(f'{k}: {v.mean():.4f}')
+    for k, v in metrics2.items():
+        np.save(os.path.join(save_dir, f'{k}_per_instance.npy'), v)
+        print(f'{k}: {v.mean():.4f}')
+
 
 
 if __name__ == "__main__":
@@ -224,7 +247,7 @@ if __name__ == "__main__":
     parser.add_argument('--params', type=str, required=True)
     parser.add_argument(
         '--weight', type=str, required=True, help='load weight')
-    parser.add_argument('--batch_size', type=int, default=-1)
+    parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--save_num', type=int, default=-1)
     args = parser.parse_args()
 

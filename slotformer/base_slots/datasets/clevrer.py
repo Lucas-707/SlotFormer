@@ -30,8 +30,11 @@ class CLEVRERDataset(Dataset):
         self.data_root = data_root
         self.split = split
         assert self.split in ['train', 'val', 'test']
-        self.video_path = os.path.join(data_root, 'videos', split)
-        self.anno_path = os.path.join(data_root, 'annotations', split)
+        # self.video_path = os.path.join(data_root, 'videos', split)
+        # self.anno_path = os.path.join(data_root, 'annotations', split)
+        self.video_path = data_root
+        self.anno_path = data_root
+
 
         self.clevrer_transforms = clevrer_transforms
         self.max_n_objects = max_n_objects
